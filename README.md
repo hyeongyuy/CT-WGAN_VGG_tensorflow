@@ -1,8 +1,9 @@
 # WGAN_VGG_tensorflow
 Low Dose CT Image Denoising Using a Generative Adversarial Network with Wasserstein Distance and Perceptual Loss<br>
 
-![Network architecture](../img/network.jpg)<br>
-![procedure](../img/procedure.jpg)
+![Network architecture](https://github.com/hyeongyuy/WGAN_VGG_tensorflow/blob/master/img/network.jpg)
+<br>
+![procedure](https://github.com/hyeongyuy/WGAN_VGG_tensorflow/blob/master/img/procedure.jpg)
 
 ## run..
 train)<br>
