@@ -122,16 +122,6 @@ class wganVgg(object):
         self.whole_img_summary = tf.concat([self.whole_z, self.whole_x, self.G_whole_zi], axis = 2)        
         self.summary_image = tf.summary.image('1_whole_image', self.whole_img_summary)
 
-        #ROI summary
-        if args.mayo_roi:
-            self.ROI_zi =  tf.placeholder(tf.float32, [None, 128, 128, args.img_channel], name='ROI_A')
-            self.ROI_xi =  tf.placeholder(tf.float32, [None, 128, 128, args.img_channel], name='ROI_B')
-            self.ROI_G_zi = self.g_net(self.ROI_zi)
-
-            self.ROI_real_img_summary = tf.concat([self.ROI_zi, self.ROI_xi, self.ROI_G_zi], axis = 2)
-            self.summary_ROI_image_1 = tf.summary.image('2_ROI_image_1', self.ROI_real_img_summary)
-            self.summary_ROI_image_2 = tf.summary.image('3_ROI_image_2', self.ROI_real_img_summary)
-        
         
         #### optimizer
         self.d_adam, self.g_adam = None, None
@@ -202,56 +192,6 @@ class wganVgg(object):
                                             })
         self.writer.add_summary(summary_str1, t)
         self.writer.add_summary(summary_str2, t)
-
-        """
-            summary ROI IMAGE
-        """
-        if args.mayo_roi:
-            ROI_sample = [['067', '0203', [161, 289], [61, 189]],
-                        ['291', '0196', [111, 239], [111, 239]]]
-            
-            LDCT_ROI_idx = [self.test_image_loader.LDCT_image_name.index(\
-                'L{}_{}_{}'.format(s[0], args.LDCT_path, s[1])) for s in ROI_sample]
-            
-            NDCT_ROI_idx = [self.test_image_loader.NDCT_image_name.index(\
-                'L{}_{}_{}'.format(s[0], args.NDCT_path, s[1])) for s in ROI_sample]
-
-
-            RIO_LDCT  = [self.test_image_loader.LDCT_images[idx] for idx in LDCT_ROI_idx]
-            RIO_NDCT  = [self.test_image_loader.NDCT_images[idx] for idx in NDCT_ROI_idx]
-
-            ROI_LDCT_arr = [ut.ROI_img(RIO_LDCT[0], row = ROI_sample[0][2], col = ROI_sample[0][3]), \
-                            ut.ROI_img(RIO_LDCT[1], row = ROI_sample[1][2], col = ROI_sample[1][3])]
-
-            ROI_NDCT_arr = [ut.ROI_img(RIO_NDCT[0], row = ROI_sample[0][2], col = ROI_sample[0][3]), \
-                            ut.ROI_img(RIO_NDCT[1], row = ROI_sample[1][2], col = ROI_sample[1][3])]
-            
-            ROI_G_zi_1 = self.sess.run(
-                self.ROI_G_zi,  feed_dict={
-                self.ROI_zi :  ROI_LDCT_arr[0].reshape([1] + self.ROI_zi.get_shape().as_list()[1:])})
-
-            ROI_G_zi_2 = self.sess.run(
-                self.ROI_G_zi,  feed_dict={
-                self.ROI_zi :  ROI_LDCT_arr[1].reshape([1] + self.ROI_zi.get_shape().as_list()[1:])})
-
-
-            ROI_G_zi_1, ROI_G_zi_2 = np.array(ROI_G_zi_1).astype(np.float32), np.array(ROI_G_zi_2).astype(np.float32)
-
-            roi_summary_str1 = self.sess.run(
-                self.summary_ROI_image_1,
-                feed_dict={self.ROI_zi : ROI_LDCT_arr[0].reshape([1] + self.ROI_zi.get_shape().as_list()[1:]), 
-                           self.ROI_xi : ROI_NDCT_arr[0].reshape([1] + self.ROI_xi.get_shape().as_list()[1:]),
-                           self.ROI_G_zi: ROI_G_zi_1.reshape([1] + self.ROI_G_zi.get_shape().as_list()[1:])})
-
-            roi_summary_str2  = self.sess.run(
-                self.summary_ROI_image_2,
-                feed_dict={self.ROI_zi : ROI_LDCT_arr[1].reshape([1] + self.ROI_zi.get_shape().as_list()[1:]), 
-                           self.ROI_xi : ROI_NDCT_arr[1].reshape([1] + self.ROI_xi.get_shape().as_list()[1:]),
-                           self.ROI_G_zi: ROI_G_zi_2.reshape([1] + self.ROI_G_zi.get_shape().as_list()[1:])})
-
-            self.writer.add_summary(roi_summary_str1, t)
-            self.writer.add_summary(roi_summary_str2, t)
-
 
     
     def save(self, step, checkpoint_dir = 'checkpoint'):
