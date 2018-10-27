@@ -1,46 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 19 16:39:45 2018
+Created on Thu Oct 11 11:04:24 2018
 
 @author: yeohyeongyu
 """
 
+
+"""
+################################################################################
+
+1. discriminator
+2. generator
+3. pre trained VGG net
+
+"""
 import os
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import tensorflow.contrib.layers as tcl
 import numpy as np
 
-import time
-import inspect
-
 """
-################################################################################
-* network structure
-    1. generator detail
-     - 8 conv layers (with relu)
-     - kernel size : 3*3 
-     - filters 
-        - first_7 : 32
-        - last : 1
-    
-    2. perceptual loss
-     - pre-trained VGG net
-     - feed : ground truth (generated image)
-     - loss: L2 (ground truth)
-     - gradient : only generator
-    
-    3. discriminator
-     -str :  
-         - 6 conv layer(with leaky relu)
-         -> fully connected : 1024 (wit leaky relu)
-         -> fully connected : 1 (cross entropy)
-     - filters:
-         - first_2 : 64
-         - mid_2 : 128
-         - last_2  : 256
-         - kernel size : 3*3
-         
+module (discriminator, generator, pretrained vgg)
 """
 def discriminator(image, name="discriminator", reuse = True):
     with tf.variable_scope(name):
@@ -168,6 +149,3 @@ def fcn(input_, n_weight, name = 'fcn'):
         flat_img = tcl.flatten(input_)
         fc = tcl.fully_connected(flat_img, n_weight, activation_fn=None)
         return fc
-    
-
-
