@@ -18,11 +18,11 @@ print('pwd : {}'.format(os.getcwd()))
 
 parser = argparse.ArgumentParser(description='')
 #set load directory
-parser.add_argument('--dcm_path', dest='dcm_path', default= '/data1/AAPM-Mayo-CT-Challenge', help='dicom file directory')
+parser.add_argument('--dcm_path', dest='dcm_path', default= '/data1/CTIMAGE', help='dicom file directory')
 parser.add_argument('--LDCT_path', dest='LDCT_path', default= 'quarter_3mm', help='LDCT image folder name')
 parser.add_argument('--NDCT_path', dest='NDCT_path', default= 'full_3mm', help='NDCT image folder name')
-parser.add_argument('--test_patient_no', dest='test_patient_no',type=ut.ParseList, default= 'L067,L291')
-parser.add_argument('--pretrained_vgg', dest='pretrained_vgg', default='./pretrained_vgg', help='pretrained vggnet directory(only wgan_vgg)')
+parser.add_argument('--test_patient_no', dest='test_patient_no',type=ut.ParseList, default= 'P0,P1')
+parser.add_argument('--pretrained_vgg', dest='pretrained_vgg', default='./pretrained_vgg', help='pretrained vggnet directory')
 
 #set save directory
 parser.add_argument('--checkpoint_dir', dest='checkpoint_dir',  default='checkpoint', help='check point dir')
