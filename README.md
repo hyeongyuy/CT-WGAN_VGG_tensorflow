@@ -48,6 +48,28 @@ Low Dose CT Image Denoising Using a Generative Adversarial Network with Wasserst
 > [X] remove mostly air images  -> no remove (Hounsfield unit scale -> normalize 0 ~ 1)
 
 ## Main file(main.py) Parameters
+* Directory
+> * dcm_path : dicom file directory
+> * LDCT_path : LDCT image folder name
+> * NDCT_path : NDCT image folder name
+> * checkpoint_dir : save directory - trained model
+> * test_npy_save_dir : save directory - test numpy file
+> * pretrained_vgg : pretrained vggnet directory
+* Image info
+> * patch_size : patch size 
+> * whole_size : whole size
+> * img_channel : image channel
+> * img_vmax : max value
+> * img_vmin : min value
+* Train/Test
+> * model : red_cnn, wgan_vgg, cyclegan (for image preprocessing)
+> * phase : train | test
+* others
+> * is_mayo : summary ROI sample1,2
+> * save_freq : save a model every save_freq (iterations)
+> * print_freq : print_freq (iterations)
+> * continue_train : load the latest model: true, false
+> * gpu_no : visible devices(gpu no)
 * Training detail
 > * num_iter : iterations (default = 200000)
 > * alpha : learning rate (default=1e-5)
