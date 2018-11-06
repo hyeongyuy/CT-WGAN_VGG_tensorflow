@@ -20,7 +20,7 @@ class wganVgg(object):
         self.sess = sess    
         
         ####patients folder name
-        self.train_patient_no = [d.split('/')[-1] for d in glob(args.dcm_path + '/*') if ('zip' not in d) & (d not in args.test_patient_no)]     
+        self.train_patient_no = [d.split('/')[-1] for d in glob(args.dcm_path + '/*') if ('zip' not in d) & (d.split('/')[-1] not in args.test_patient_no)]     
         self.test_patient_no = args.test_patient_no    
 
 
