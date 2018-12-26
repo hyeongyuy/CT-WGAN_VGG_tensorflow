@@ -47,7 +47,7 @@ class DCMDataLoader(object):
 
         #batch generator  prameters 
         self.num_threads = num_threads
-        self.capacity  =  100 * self.num_threads * self.batch_size
+        self.capacity  =  20 * self.num_threads * self.batch_size
         self.min_queue = 10 * self.num_threads * self.batch_size
         
             
@@ -69,8 +69,8 @@ class DCMDataLoader(object):
             self.NDCT_image_name.extend(NDCT_slice_nm)
 
             #normalization  
-            p_LDCT.append(self.normalize(org_LDCT_images, self.image_max , self.image_min, self.model))
-            p_NDCT.append(self.normalize(org_NDCT_images, self.image_max , self.image_min, self.model))
+            p_LDCT.append(self.normalize(org_LDCT_images, self.image_max , self.image_min))
+            p_NDCT.append(self.normalize(org_NDCT_images, self.image_max , self.image_min))
             
         self.LDCT_images = np.concatenate(tuple(p_LDCT), axis=0)
         self.NDCT_images = np.concatenate(tuple(p_NDCT), axis=0)
@@ -111,9 +111,9 @@ class DCMDataLoader(object):
             slice_nm.append(pre_fix_nm + '_' + d_idx)
         return np.array(image, dtype=np.int16), slice_nm
 
-    def normalize(self, img, max_ = 3072, min_=-1024, model ='cyclegan'):
+    def normalize(self, img, max_ = 3072, min_=-1024):
         img = img.astype(np.float32) 
-        if model == 'cyclegan':  #-1 ~ 1
+        if 'cycle' in self.model:  #-1 ~ 1
             img = 2 * ((img - min_) / (max_  -  min_)) -1
             return img
         else: # 0 ~ 1
@@ -146,7 +146,7 @@ class DCMDataLoader(object):
                 return LDCT, NDCT
             
     #WGAN_VGG, RED_CNN
-    def get_randam_patches(self, LDCT_slice, NDCT_slice, patch_size, whole_size= 512, model='wgan_vgg'):
+    def get_randam_patches(self, LDCT_slice, NDCT_slice, patch_size, whole_size= 512):
         whole_h =  whole_w = whole_size
         h = w = patch_size
 
@@ -175,7 +175,7 @@ class DCMDataLoader(object):
 
         def enqueue(coord):
             enqueue_size = max(200, self.batch_size)
-            if self.model == 'cyclegan':
+            if  self.model == 'cyclegan':#only cyclegan (cycelgain-identity:random patch))
                 self.step = 0
                 while not coord.should_stop():
                     start_pos = 0
@@ -204,10 +204,15 @@ class DCMDataLoader(object):
                 while not coord.should_stop():
                     LDCT_imgs, NDCT_imgs = [], []
                     for i in range(enqueue_size):
-                        sltd_idx = np.random.choice(self.LDCT_index)
+                        if self.is_unpair:
+                            L_sltd_idx = np.random.choice(self.LDCT_index)
+                            N_sltd_idx = np.random.choice(self.NDCT_index)
+                        else:
+                            L_sltd_idx = N_sltd_idx = np.random.choice(self.LDCT_index)
+                            
                         pat_LDCT, pat_NDCT = \
-                            self.get_randam_patches(self.LDCT_images[sltd_idx],
-                                self.NDCT_images[sltd_idx], image_size, model = self.model)
+                            self.get_randam_patches(self.LDCT_images[L_sltd_idx],
+                                self.NDCT_images[N_sltd_idx], image_size)
                         LDCT_imgs.append(np.expand_dims(pat_LDCT, axis=-1))
                         NDCT_imgs.append(np.expand_dims(pat_NDCT, axis=-1))
                     sess.run(enqueue_op, feed_dict={queue_input: np.array(LDCT_imgs), \

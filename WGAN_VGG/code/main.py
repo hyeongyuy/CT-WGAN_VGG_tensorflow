@@ -25,8 +25,8 @@ parser.add_argument('--test_patient_no', dest='test_patient_no',type=ut.ParseLis
 parser.add_argument('--pretrained_vgg', dest='pretrained_vgg', default='/data/pretrained_vgg', help='pretrained vggnet directory(only wgan_vgg)')
 
 #set save directory
-parser.add_argument('--checkpoint_dir', dest='checkpoint_dir',  default='checkpoint', help='check point dir')
-parser.add_argument('--test_npy_save_dir', dest='test_npy_save_dir',  default='test', help='test numpy file save dir')
+parser.add_argument('--checkpoint_dir', dest='checkpoint_dir',  default='/data/WGAN_VGG/checkpoint', help='check point dir')
+parser.add_argument('--test_npy_save_dir', dest='test_npy_save_dir',  default='/data/WGAN_VGG/test', help='test numpy file save dir')
 
 #image info
 parser.add_argument('--patch_size', dest='patch_size', type=int,  default=64, help='image patch size, h=w')
